@@ -323,22 +323,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <main className={`flex-1 md:ml-64 ${impersonating ? 'mt-10' : ''}`}>
 
         {/* Navbar mobile */}
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 z-10">
-          <div className="flex">
-            {menuItems.slice(0, 5).map(item => {
-              const isActive = pathname === item.href
-              return (
-                <Link key={item.href} href={item.href}
-                  className={`flex-1 flex flex-col items-center py-3 gap-0.5 text-xs transition-colors ${
-                    isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'
-                  }`}>
-                  {item.icon}
-                  <span>{item.label}</span>
-                </Link>
-              )
-            })}
-          </div>
-        </nav>
+<nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 z-10">
+  <div className="flex overflow-x-auto scrollbar-hide">
+    {allMenuItems.map(item => {
+      const isActive = pathname === item.href
+      return (
+        <Link
+          key={item.href}
+          href={item.href}
+          className={`flex flex-col items-center py-2 px-3 gap-0.5 text-xs transition-colors shrink-0 min-w-[64px] ${
+            isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'
+          }`}
+        >
+          {item.icon}
+          <span className="whitespace-nowrap">{item.label}</span>
+        </Link>
+      )
+    })}
+  </div>
+</nav>
 
         <div className="pb-20 md:pb-0">
           {children}

@@ -228,7 +228,7 @@ export default function DashboardPage() {
                       </p>
                     </div>
                   </div>
-                  <p className={`text-sm font-semibold ${tx.type === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  <p className={`text-sm font-semibold whitespace-nowrap shrink-0 ml-2 ${tx.type === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                     {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount_cents)}
                   </p>
                 </div>
