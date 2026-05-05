@@ -195,8 +195,7 @@ export default function TransfersPage() {
                 <select
                   value={form.from_account_id}
                   onChange={e => setForm({ ...form, from_account_id: e.target.value })}
-                  style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 >
                   <option value="">Selecione a conta de origem</option>
                   {accounts.map(acc => (
@@ -210,8 +209,7 @@ export default function TransfersPage() {
                 <select
                   value={form.to_account_id}
                   onChange={e => setForm({ ...form, to_account_id: e.target.value })}
-                  style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 >
                   <option value="">Selecione a conta de destino</option>
                   {accounts.filter(acc => acc.id !== form.from_account_id).map(acc => (
@@ -227,8 +225,7 @@ export default function TransfersPage() {
                   value={form.amount}
                   onChange={e => setForm({ ...form, amount: e.target.value })}
                   placeholder="0,00"
-                  style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                 />
               </div>
 
@@ -238,8 +235,7 @@ export default function TransfersPage() {
                   type="date"
                   value={form.date}
                   onChange={e => setForm({ ...form, date: e.target.value })}
-                  style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
 
@@ -250,8 +246,7 @@ export default function TransfersPage() {
                   value={form.notes}
                   onChange={e => setForm({ ...form, notes: e.target.value })}
                   placeholder="Ex: Pagamento de aluguel..."
-                  style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                 />
               </div>
             </div>

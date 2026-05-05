@@ -53,11 +53,9 @@ export default function GoalsPage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
-  // Simulação
   const [simMonthly, setSimMonthly] = useState('')
   const [simMonths, setSimMonths] = useState('')
 
-  // Aporte
   const [depositAmount, setDepositAmount] = useState('')
   const [depositAccountId, setDepositAccountId] = useState('')
   const [depositSaving, setDepositSaving] = useState(false)
@@ -213,8 +211,8 @@ export default function GoalsPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Metas</h1>
-          <p className="text-gray-500 text-sm mt-1">Acompanhe seus objetivos financeiros</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Metas</h1>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Acompanhe seus objetivos financeiros</p>
         </div>
         <button
           onClick={openCreate}
@@ -227,9 +225,9 @@ export default function GoalsPage() {
       {loading ? (
         <div className="text-center py-12 text-gray-400 text-sm">Carregando...</div>
       ) : goals.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-100 p-12 text-center">
-          <p className="text-gray-400 text-sm">Nenhuma meta cadastrada</p>
-          <button onClick={openCreate} className="mt-4 text-blue-600 text-sm hover:underline">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-12 text-center">
+          <p className="text-gray-400 dark:text-gray-500 text-sm">Nenhuma meta cadastrada</p>
+          <button onClick={openCreate} className="mt-4 text-blue-600 dark:text-blue-400 text-sm hover:underline">
             Criar primeira meta
           </button>
         </div>
@@ -237,7 +235,7 @@ export default function GoalsPage() {
         <div className="space-y-6">
           {active.length > 0 && (
             <div>
-              <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+              <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
                 Em andamento ({active.length})
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -255,7 +253,7 @@ export default function GoalsPage() {
           )}
           {completed.length > 0 && (
             <div>
-              <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+              <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
                 Concluídas ({completed.length})
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -276,14 +274,14 @@ export default function GoalsPage() {
 
       {/* Modal criar/editar */}
       {showModal && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: '16px' }}>
-          <div className="bg-white rounded-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
-            <h2 className="text-lg font-bold text-gray-900 mb-5">
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-5">
               {editing ? 'Editar meta' : 'Nova meta'}
             </h2>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-4">
+              <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg text-sm mb-4">
                 {error}
               </div>
             )}
@@ -296,7 +294,7 @@ export default function GoalsPage() {
                   value={form.name}
                   onChange={e => setForm({ ...form, name: e.target.value })}
                   placeholder="Ex: Viagem, Reserva de emergência..."
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                 />
               </div>
 
@@ -307,7 +305,7 @@ export default function GoalsPage() {
                   value={form.target_amount}
                   onChange={e => setForm({ ...form, target_amount: e.target.value })}
                   placeholder="0,00"
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                 />
               </div>
 
@@ -318,7 +316,7 @@ export default function GoalsPage() {
                   value={form.current_amount}
                   onChange={e => setForm({ ...form, current_amount: e.target.value })}
                   placeholder="0,00"
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                 />
               </div>
 
@@ -335,24 +333,24 @@ export default function GoalsPage() {
 
             {/* Simulação */}
             {sim && (
-              <div className="mt-5 bg-blue-50 rounded-xl p-4 space-y-4">
-                <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide">
+              <div className="mt-5 bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 space-y-4">
+                <p className="text-xs font-semibold text-blue-700 dark:text-blue-400 uppercase tracking-wide">
                   Simulação — faltam {formatCurrency(sim.remaining)}
                 </p>
 
                 {sim.byDeadline && (
-                  <div className="bg-white rounded-lg p-3 border border-blue-100">
-                    <p className="text-xs text-gray-500 mb-1">
+                  <div className="bg-white dark:bg-gray-700 rounded-lg p-3 border border-blue-100 dark:border-blue-800">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                       💡 Para atingir no prazo ({sim.byDeadline.months} meses)
                     </p>
-                    <p className="text-sm font-bold text-blue-700">
+                    <p className="text-sm font-bold text-blue-700 dark:text-blue-400">
                       {formatCurrency(Math.ceil(sim.byDeadline.monthly * 100))} / mês
                     </p>
                   </div>
                 )}
 
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
                     Se eu guardar por mês:
                   </label>
                   <input
@@ -360,24 +358,23 @@ export default function GoalsPage() {
                     value={simMonthly}
                     onChange={e => { setSimMonthly(e.target.value); setSimMonths('') }}
                     placeholder="Ex: 500,00"
-                    style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                    className="w-full px-3 py-2 border border-blue-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    className="w-full px-3 py-2 border border-blue-200 dark:border-blue-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                   />
                   {sim.byMonthly && (
-                    <div className="mt-2 bg-white rounded-lg p-3 border border-blue-100">
-                      <p className="text-xs text-gray-500">Você vai atingir a meta em:</p>
-                      <p className="text-sm font-bold text-blue-700 mt-0.5">
+                    <div className="mt-2 bg-white dark:bg-gray-700 rounded-lg p-3 border border-blue-100 dark:border-blue-800">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Você vai atingir a meta em:</p>
+                      <p className="text-sm font-bold text-blue-700 dark:text-blue-400 mt-0.5">
                         {sim.byMonthly.years > 0 && `${sim.byMonthly.years} ano${sim.byMonthly.years > 1 ? 's' : ''} `}
                         {sim.byMonthly.extraMonths > 0 && `${sim.byMonthly.extraMonths} mês${sim.byMonthly.extraMonths > 1 ? 'es' : ''}`}
                         {sim.byMonthly.years === 0 && sim.byMonthly.extraMonths === 0 && 'menos de 1 mês'}
                       </p>
-                      <p className="text-xs text-gray-400 mt-0.5">{sim.byMonthly.months} meses no total</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{sim.byMonthly.months} meses no total</p>
                     </div>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
                     Se eu quero atingir em (meses):
                   </label>
                   <input
@@ -386,13 +383,12 @@ export default function GoalsPage() {
                     value={simMonths}
                     onChange={e => { setSimMonths(e.target.value); setSimMonthly('') }}
                     placeholder="Ex: 12"
-                    style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                    className="w-full px-3 py-2 border border-blue-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    className="w-full px-3 py-2 border border-blue-200 dark:border-blue-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                   />
                   {sim.byTime && (
-                    <div className="mt-2 bg-white rounded-lg p-3 border border-blue-100">
-                      <p className="text-xs text-gray-500">Você vai precisar guardar por mês:</p>
-                      <p className="text-sm font-bold text-blue-700 mt-0.5">
+                    <div className="mt-2 bg-white dark:bg-gray-700 rounded-lg p-3 border border-blue-100 dark:border-blue-800">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Você vai precisar guardar por mês:</p>
+                      <p className="text-sm font-bold text-blue-700 dark:text-blue-400 mt-0.5">
                         {formatCurrency(Math.ceil(sim.byTime.monthly * 100))}
                       </p>
                     </div>
@@ -404,7 +400,7 @@ export default function GoalsPage() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setShowModal(false)}
-                className="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50"
+                className="flex-1 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
               >
                 Cancelar
               </button>
@@ -423,24 +419,24 @@ export default function GoalsPage() {
       {/* Modal de aporte */}
       {showDepositModal && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
-          <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', width: '100%', maxWidth: '384px', padding: '24px' }}>
-            <h2 className="text-lg font-bold text-gray-900 mb-1">Registrar aporte</h2>
-            <p className="text-sm text-gray-500 mb-5">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-sm p-6">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Registrar aporte</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">
               Meta: <strong>{showDepositModal.name}</strong>
             </p>
 
             {depositError && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-4">
+              <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg text-sm mb-4">
                 {depositError}
               </div>
             )}
 
-            <div className="bg-gray-50 rounded-xl p-3 mb-4">
-              <div className="flex justify-between text-xs text-gray-500 mb-1">
+            <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-3 mb-4">
+              <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
                 <span>{formatCurrency(showDepositModal.current_amount_cents)}</span>
                 <span>{formatCurrency(showDepositModal.target_amount_cents)}</span>
               </div>
-              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div className="h-2 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full bg-blue-500"
                   style={{
@@ -448,33 +444,31 @@ export default function GoalsPage() {
                   }}
                 />
               </div>
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
                 Faltam {formatCurrency(Math.max(showDepositModal.target_amount_cents - showDepositModal.current_amount_cents, 0))}
               </p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Valor do aporte (R$)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Valor do aporte (R$)</label>
                 <input
                   type="text"
                   value={depositAmount}
                   onChange={e => setDepositAmount(e.target.value)}
                   placeholder="0,00"
                   autoFocus
-                  style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Descontar de qual conta? <span className="text-gray-400">(opcional)</span>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Descontar de qual conta? <span className="text-gray-400 dark:text-gray-500">(opcional)</span>
                 </label>
                 <select
                   value={depositAccountId}
                   onChange={e => setDepositAccountId(e.target.value)}
-                  style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 >
                   <option value="">Não descontar de nenhuma conta</option>
                   {accounts.map(acc => (
@@ -487,7 +481,7 @@ export default function GoalsPage() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setShowDepositModal(null)}
-                className="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50"
+                className="flex-1 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
               >
                 Cancelar
               </button>

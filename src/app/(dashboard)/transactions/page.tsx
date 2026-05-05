@@ -333,8 +333,7 @@ export default function TransactionsPage() {
                   value={form.description}
                   onChange={e => setForm({ ...form, description: e.target.value })}
                   placeholder="Ex: Almoço, Salário..."
-                  style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -346,8 +345,7 @@ export default function TransactionsPage() {
                   value={form.amount}
                   onChange={e => setForm({ ...form, amount: e.target.value })}
                   placeholder="0,00"
-                  style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -358,8 +356,7 @@ export default function TransactionsPage() {
                   type="date"
                   value={form.date}
                   onChange={e => setForm({ ...form, date: e.target.value })}
-                  style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -369,8 +366,7 @@ export default function TransactionsPage() {
                 <select
                   value={form.category_id}
                   onChange={e => setForm({ ...form, category_id: e.target.value })}
-                  style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Sem categoria</option>
                   {filteredCategories.map(cat => (
@@ -385,8 +381,7 @@ export default function TransactionsPage() {
                 <select
                   value={form.payment_method}
                   onChange={e => setForm({ ...form, payment_method: e.target.value, account_id: '', credit_card_id: '' })}
-                  style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   {Object.entries(PAYMENT_METHODS).map(([value, label]) => (
                     <option key={value} value={value}>{label}</option>
@@ -401,8 +396,7 @@ export default function TransactionsPage() {
                   <select
                     value={form.credit_card_id}
                     onChange={e => setForm({ ...form, credit_card_id: e.target.value })}
-                    style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="">Selecione um cartão</option>
                     {cards.map(card => (
@@ -416,8 +410,7 @@ export default function TransactionsPage() {
                   <select
                     value={form.account_id}
                     onChange={e => setForm({ ...form, account_id: e.target.value })}
-                    style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="">Selecione uma conta</option>
                     {accounts.map(acc => (

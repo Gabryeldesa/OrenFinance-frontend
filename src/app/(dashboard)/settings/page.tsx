@@ -8,13 +8,11 @@ import { supabase } from '@/lib/supabase'
 interface Profile {
   name: string
   email: string
-  currency: string
-  locale: string
 }
 
 export default function SettingsPage() {
   const router = useRouter()
-  const [profile, setProfile] = useState<Profile>({ name: '', email: '', currency: 'BRL', locale: 'pt-BR' })
+  const [profile, setProfile] = useState<Profile>({ name: '', email: '' })
   const [loading, setLoading] = useState(true)
   const [savingProfile, setSavingProfile] = useState(false)
   const [savingPassword, setSavingPassword] = useState(false)
@@ -31,7 +29,7 @@ export default function SettingsPage() {
         const { data: { session } } = await supabase.auth.getSession()
         if (!session) { setErrorProfile('Sessão expirada. Faça login novamente.'); setLoading(false); return }
         const res = await settingsAPI.getProfile()
-        setProfile(res.data)
+        setProfile({ name: res.data.name, email: res.data.email })
       } catch {
         setErrorProfile('Erro ao carregar perfil.')
       } finally {
@@ -46,7 +44,7 @@ export default function SettingsPage() {
     setErrorProfile('')
     setSuccessProfile(false)
     try {
-      await settingsAPI.updateProfile({ name: profile.name, currency: profile.currency, locale: profile.locale })
+      await settingsAPI.updateProfile({ name: profile.name })
       setSuccessProfile(true)
       setTimeout(() => setSuccessProfile(false), 3000)
     } catch {
@@ -135,33 +133,6 @@ export default function SettingsPage() {
                 className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-lg text-sm cursor-not-allowed bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
               />
               <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">O e-mail não pode ser alterado.</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Moeda</label>
-              <select
-                value={profile.currency}
-                onChange={e => setProfile({ ...profile, currency: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              >
-                <option value="BRL">Real brasileiro (R$)</option>
-                <option value="USD">Dólar americano (US$)</option>
-                <option value="EUR">Euro (€)</option>
-                <option value="GBP">Libra esterlina (£)</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Idioma</label>
-              <select
-                value={profile.locale}
-                onChange={e => setProfile({ ...profile, locale: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              >
-                <option value="pt-BR">Português (Brasil)</option>
-                <option value="en-US">English (US)</option>
-                <option value="es-ES">Español</option>
-              </select>
             </div>
           </div>
 

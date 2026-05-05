@@ -159,6 +159,9 @@ export default function RecurringPage() {
   const active = rules.filter(r => r.is_active)
   const inactive = rules.filter(r => !r.is_active)
 
+  const inputClass = "w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+  const selectClass = "w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
@@ -284,8 +287,7 @@ export default function RecurringPage() {
                   value={form.description}
                   onChange={e => setForm({ ...form, description: e.target.value })}
                   placeholder="Ex: Netflix, Aluguel..."
-                  style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={inputClass}
                 />
               </div>
 
@@ -298,8 +300,7 @@ export default function RecurringPage() {
                   value={form.amount}
                   onChange={e => setForm({ ...form, amount: e.target.value })}
                   placeholder="0,00"
-                  style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={inputClass}
                 />
               </div>
 
@@ -311,8 +312,7 @@ export default function RecurringPage() {
                   max="28"
                   value={form.day_of_month}
                   onChange={e => setForm({ ...form, day_of_month: e.target.value })}
-                  style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={inputClass}
                 />
                 <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Use até o dia 28 para funcionar em todos os meses</p>
               </div>
@@ -340,8 +340,7 @@ export default function RecurringPage() {
                     value={form.total_installments}
                     onChange={e => setForm({ ...form, total_installments: e.target.value })}
                     placeholder="Ex: 12"
-                    style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className={inputClass}
                   />
                 </div>
               )}
@@ -351,8 +350,7 @@ export default function RecurringPage() {
                 <select
                   value={form.category_id}
                   onChange={e => setForm({ ...form, category_id: e.target.value })}
-                  style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={selectClass}
                 >
                   <option value="">Sem categoria</option>
                   {filteredCategories.map(cat => (
@@ -366,8 +364,7 @@ export default function RecurringPage() {
                 <select
                   value={form.credit_card_id}
                   onChange={e => setForm({ ...form, credit_card_id: e.target.value, account_id: '' })}
-                  style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={selectClass}
                 >
                   <option value="">Nenhum cartão</option>
                   {cards.map(card => (
@@ -382,8 +379,7 @@ export default function RecurringPage() {
                   <select
                     value={form.account_id}
                     onChange={e => setForm({ ...form, account_id: e.target.value })}
-                    style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className={selectClass}
                   >
                     <option value="">Sem conta</option>
                     {accounts.map(acc => (
