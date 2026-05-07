@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
+import { useIdleLogout } from '@/hooks/useIdleLogout'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
@@ -95,7 +96,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [showAlerts, setShowAlerts] = useState(false)
   const alertsRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => { setMounted(true) }, [])
+  useIdleLogout()
+
+useEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
     if (!mounted) return
