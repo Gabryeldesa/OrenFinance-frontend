@@ -13,17 +13,22 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
 
+  const validatePassword = (pwd: string) => {
+    if (pwd.length < 8) return 'A senha deve ter pelo menos 8 caracteres.'
+    if (!/[a-zA-Z]/.test(pwd)) return 'A senha deve conter pelo menos uma letra.'
+    if (!/[0-9]/.test(pwd)) return 'A senha deve conter pelo menos um número.'
+    return null
+  }
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
 
+    const pwdError = validatePassword(password)
+    if (pwdError) { setError(pwdError); return }
+
     if (password !== confirm) {
       setError('As senhas não coincidem.')
-      return
-    }
-
-    if (password.length < 6) {
-      setError('A senha deve ter pelo menos 6 caracteres.')
       return
     }
 
@@ -35,7 +40,7 @@ export default function RegisterPage() {
         password,
         options: {
           data: { full_name: name },
-          emailRedirectTo: 'http://localhost:3000/login'
+          emailRedirectTo: 'https://oren-finance-frontend.vercel.app/login'
         }
       })
 
@@ -137,11 +142,14 @@ export default function RegisterPage() {
             type="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
-            placeholder="Mínimo 6 caracteres"
+            placeholder="Mínimo 8 caracteres"
             required
             style={{ color: '#111827', backgroundColor: '#ffffff' }}
             className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
+          <p className="text-xs text-gray-400 mt-1.5">
+            A senha deve ter no mínimo 8 caracteres, com letras e números.
+          </p>
         </div>
 
         <div>
