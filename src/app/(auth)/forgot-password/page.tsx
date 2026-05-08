@@ -40,7 +40,14 @@ export default function ForgotPasswordPage() {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: 'https://oren-finance-frontend.vercel.app/reset-password',
       })
-      if (error) { setError('Erro ao enviar o e-mail. Tente novamente.'); return }
+      if (error) {
+  if (error.message?.includes('rate limit') || error.status === 429) {
+    setError('Aguarde alguns minutos antes de solicitar outro link.')
+  } else {
+    setError('Erro ao enviar o e-mail. Verifique o endereço e tente novamente.')
+  }
+  return
+}
       setSent(true)
     } catch {
       setError('Erro inesperado. Tente novamente.')

@@ -35,7 +35,6 @@ export default function ResetPasswordPage() {
     setTheme(initial)
     document.documentElement.classList.toggle('dark', initial === 'dark')
 
-    // O Supabase processa o token da URL automaticamente via onAuthStateChange
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'PASSWORD_RECOVERY') {
         setReady(true)
@@ -45,14 +44,20 @@ export default function ResetPasswordPage() {
     return () => subscription.unsubscribe()
   }, [])
 
+  const validatePassword = (pwd: string) => {
+    if (pwd.length < 8) return 'A senha deve ter pelo menos 8 caracteres.'
+    if (!/[a-zA-Z]/.test(pwd)) return 'A senha deve conter pelo menos uma letra.'
+    if (!/[0-9]/.test(pwd)) return 'A senha deve conter pelo menos um número.'
+    return null
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
 
-    if (password.length < 8) {
-      setError('A senha precisa ter pelo menos 8 caracteres.')
-      return
-    }
+    const pwdError = validatePassword(password)
+    if (pwdError) { setError(pwdError); return }
+
     if (password !== confirm) {
       setError('As senhas não coincidem.')
       return
@@ -147,6 +152,9 @@ export default function ResetPasswordPage() {
                   }}
                   className="w-full px-4 py-2.5 border rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
+                <p className={`text-xs mt-1.5 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                  A senha deve ter no mínimo 8 caracteres, com letras e números.
+                </p>
               </div>
 
               <div>
