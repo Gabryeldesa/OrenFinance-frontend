@@ -46,6 +46,8 @@ interface TransactionForm {
   payment_method: string
   notes: string
   is_confirmed: boolean
+  is_installment: boolean
+  total_installments: string
 }
 
 const emptyForm: TransactionForm = {
@@ -58,7 +60,9 @@ const emptyForm: TransactionForm = {
   credit_card_id: '',
   payment_method: 'pix',
   notes: '',
-  is_confirmed: true
+  is_confirmed: true,
+  is_installment: false,
+  total_installments: '',
 }
 
 export default function TransactionsPage() {
@@ -117,7 +121,9 @@ export default function TransactionsPage() {
       credit_card_id: tx.credit_card_id || '',
       payment_method: tx.payment_method || 'pix',
       notes: '',
-      is_confirmed: tx.is_confirmed
+      is_confirmed: tx.is_confirmed,
+      is_installment: false,
+      total_installments: '',
     })
     setError('')
     setShowModal(true)
@@ -128,29 +134,61 @@ export default function TransactionsPage() {
     if (!form.amount) { setError('Valor é obrigatório.'); return }
     if (isCredit && !form.credit_card_id) { setError('Selecione um cartão.'); return }
     if (!isCredit && !form.account_id) { setError('Selecione uma conta.'); return }
+    if (form.is_installment && !form.total_installments) { setError('Informe o número de parcelas.'); return }
+    if (form.is_installment && !isCredit) { setError('Parcelado só funciona com cartão de crédito.'); return }
+
     setSaving(true)
     setError('')
+
     try {
-      const amount_cents = Math.round(
+      const totalCents = Math.round(
         parseFloat(form.amount.replace(/\./g, '').replace(',', '.')) * 100
       )
-      const body = {
-        description: form.description.trim(),
-        amount_cents,
-        type: form.type,
-        date: form.date,
-        category_id: form.category_id || null,
-        account_id: isCredit ? null : form.account_id,
-        credit_card_id: isCredit ? form.credit_card_id : null,
-        payment_method: form.payment_method,
-        notes: form.notes || null,
-        is_confirmed: form.is_confirmed
-      }
-      if (editing) {
-        await transactionsAPI.update(editing.id, body)
+
+      if (form.is_installment && !editing) {
+        // Cria uma transação por parcela
+        const n = parseInt(form.total_installments)
+        const baseDate = new Date(form.date + 'T12:00:00')
+
+        for (let i = 0; i < n; i++) {
+          const parcelDate = new Date(baseDate)
+          parcelDate.setMonth(parcelDate.getMonth() + i)
+          const dateStr = parcelDate.toISOString().split('T')[0]
+          const parcelCents = Math.round(totalCents / n)
+
+          await transactionsAPI.create({
+            description: `${form.description.trim()} (${i + 1}/${n})`,
+            amount_cents: parcelCents,
+            type: form.type,
+            date: dateStr,
+            category_id: form.category_id || null,
+            account_id: null,
+            credit_card_id: form.credit_card_id,
+            payment_method: 'credit_card',
+            notes: form.notes || null,
+            is_confirmed: form.is_confirmed,
+          })
+        }
       } else {
-        await transactionsAPI.create(body)
+        const body = {
+          description: form.description.trim(),
+          amount_cents: totalCents,
+          type: form.type,
+          date: form.date,
+          category_id: form.category_id || null,
+          account_id: isCredit ? null : form.account_id,
+          credit_card_id: isCredit ? form.credit_card_id : null,
+          payment_method: form.payment_method,
+          notes: form.notes || null,
+          is_confirmed: form.is_confirmed,
+        }
+        if (editing) {
+          await transactionsAPI.update(editing.id, body)
+        } else {
+          await transactionsAPI.create(body)
+        }
       }
+
       setShowModal(false)
       loadData()
     } catch (err: unknown) {
@@ -174,6 +212,9 @@ export default function TransactionsPage() {
   const totalIncome = transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + t.amount_cents, 0)
   const totalExpense = transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + t.amount_cents, 0)
 
+  const inputClass = "w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+  const selectClass = "w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
@@ -189,7 +230,7 @@ export default function TransactionsPage() {
         </button>
       </div>
 
-      {/* Cards de resumo — fundo adaptado ao tema */}
+      {/* Resumo */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4">
           <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Receitas</p>
@@ -207,7 +248,7 @@ export default function TransactionsPage() {
         </div>
       </div>
 
-      {/* Filtros — inputs com dark mode via className (sem style fixo branco) */}
+      {/* Filtros */}
       <div className="flex gap-3 mb-4 flex-wrap">
         <input
           type="month"
@@ -226,6 +267,7 @@ export default function TransactionsPage() {
         </select>
       </div>
 
+      {/* Lista */}
       {loading ? (
         <div className="text-center py-12 text-gray-400 text-sm">Carregando...</div>
       ) : transactions.length === 0 ? (
@@ -240,14 +282,10 @@ export default function TransactionsPage() {
           {transactions.map((tx, index) => (
             <div
               key={tx.id}
-              className={`flex items-center justify-between p-4 ${
-                index !== transactions.length - 1 ? 'border-b border-gray-50 dark:border-gray-700' : ''
-              }`}
+              className={`flex items-center justify-between p-4 ${index !== transactions.length - 1 ? 'border-b border-gray-50 dark:border-gray-700' : ''}`}
             >
               <div className="flex items-center gap-3">
-                <div className={`w-2 h-8 rounded-full ${
-                  tx.type === 'income' ? 'bg-green-500' : tx.type === 'expense' ? 'bg-red-500' : 'bg-blue-500'
-                }`} />
+                <div className={`w-2 h-8 rounded-full ${tx.type === 'income' ? 'bg-green-500' : tx.type === 'expense' ? 'bg-red-500' : 'bg-blue-500'}`} />
                 <div>
                   <p className="text-sm font-medium text-gray-900 dark:text-white">{tx.description}</p>
                   <div className="flex items-center gap-2 mt-0.5">
@@ -264,28 +302,12 @@ export default function TransactionsPage() {
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <p className={`text-sm font-bold ${
-                  tx.type === 'income'
-                    ? 'text-green-600 dark:text-green-400'
-                    : tx.type === 'expense'
-                    ? 'text-red-600 dark:text-red-400'
-                    : 'text-blue-600 dark:text-blue-400'
-                }`}>
+                <p className={`text-sm font-bold ${tx.type === 'income' ? 'text-green-600 dark:text-green-400' : tx.type === 'expense' ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'}`}>
                   {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount_cents)}
                 </p>
                 <div className="flex gap-2">
-                  <button
-                    onClick={() => openEdit(tx)}
-                    className="text-xs text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                  >
-                    Editar
-                  </button>
-                  <button
-                    onClick={() => handleDelete(tx.id)}
-                    className="text-xs text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-                  >
-                    Excluir
-                  </button>
+                  <button onClick={() => openEdit(tx)} className="text-xs text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Editar</button>
+                  <button onClick={() => handleDelete(tx.id)} className="text-xs text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors">Excluir</button>
                 </div>
               </div>
             </div>
@@ -325,49 +347,26 @@ export default function TransactionsPage() {
                 ))}
               </div>
 
-              {/* Descrição */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descrição</label>
-                <input
-                  type="text"
-                  value={form.description}
-                  onChange={e => setForm({ ...form, description: e.target.value })}
-                  placeholder="Ex: Almoço, Salário..."
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                <input type="text" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Ex: Almoço, Salário..." className={inputClass} />
               </div>
 
-              {/* Valor */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Valor (R$)</label>
-                <input
-                  type="text"
-                  value={form.amount}
-                  onChange={e => setForm({ ...form, amount: e.target.value })}
-                  placeholder="0,00"
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  {form.is_installment ? 'Valor total da compra (R$)' : 'Valor (R$)'}
+                </label>
+                <input type="text" value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} placeholder="0,00" className={inputClass} />
               </div>
 
-              {/* Data */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Data</label>
-                <input
-                  type="date"
-                  value={form.date}
-                  onChange={e => setForm({ ...form, date: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                <input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} className={inputClass} />
               </div>
 
-              {/* Categoria */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Categoria</label>
-                <select
-                  value={form.category_id}
-                  onChange={e => setForm({ ...form, category_id: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
+                <select value={form.category_id} onChange={e => setForm({ ...form, category_id: e.target.value })} className={selectClass}>
                   <option value="">Sem categoria</option>
                   {filteredCategories.map(cat => (
                     <option key={cat.id} value={cat.id}>{cat.name}</option>
@@ -375,13 +374,12 @@ export default function TransactionsPage() {
                 </select>
               </div>
 
-              {/* Forma de pagamento */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Forma de pagamento</label>
                 <select
                   value={form.payment_method}
-                  onChange={e => setForm({ ...form, payment_method: e.target.value, account_id: '', credit_card_id: '' })}
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  onChange={e => setForm({ ...form, payment_method: e.target.value, account_id: '', credit_card_id: '', is_installment: false, total_installments: '' })}
+                  className={selectClass}
                 >
                   {Object.entries(PAYMENT_METHODS).map(([value, label]) => (
                     <option key={value} value={value}>{label}</option>
@@ -389,15 +387,10 @@ export default function TransactionsPage() {
                 </select>
               </div>
 
-              {/* Cartão ou Conta */}
               {isCredit ? (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Cartão de crédito</label>
-                  <select
-                    value={form.credit_card_id}
-                    onChange={e => setForm({ ...form, credit_card_id: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
+                  <select value={form.credit_card_id} onChange={e => setForm({ ...form, credit_card_id: e.target.value })} className={selectClass}>
                     <option value="">Selecione um cartão</option>
                     {cards.map(card => (
                       <option key={card.id} value={card.id}>{card.name}</option>
@@ -407,11 +400,7 @@ export default function TransactionsPage() {
               ) : (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Conta</label>
-                  <select
-                    value={form.account_id}
-                    onChange={e => setForm({ ...form, account_id: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
+                  <select value={form.account_id} onChange={e => setForm({ ...form, account_id: e.target.value })} className={selectClass}>
                     <option value="">Selecione uma conta</option>
                     {accounts.map(acc => (
                       <option key={acc.id} value={acc.id}>{acc.name}</option>
@@ -420,7 +409,46 @@ export default function TransactionsPage() {
                 </div>
               )}
 
-              {/* Confirmada */}
+              {/* Parcelado — só aparece com cartão e na criação */}
+              {isCredit && !editing && (
+                <>
+                  <div className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                    <input
+                      type="checkbox"
+                      id="is_installment"
+                      checked={form.is_installment}
+                      onChange={e => setForm({ ...form, is_installment: e.target.checked, total_installments: '' })}
+                      className="w-4 h-4 text-blue-600 rounded"
+                    />
+                    <label htmlFor="is_installment" className="text-sm text-gray-700 dark:text-gray-300">
+                      É uma compra parcelada
+                    </label>
+                  </div>
+
+                  {form.is_installment && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Número de parcelas</label>
+                      <input
+                        type="number"
+                        min="2"
+                        max="60"
+                        value={form.total_installments}
+                        onChange={e => setForm({ ...form, total_installments: e.target.value })}
+                        placeholder="Ex: 12"
+                        className={inputClass}
+                      />
+                      {form.total_installments && form.amount && (
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                          {parseInt(form.total_installments)}x de {formatCurrency(
+                            Math.round(parseFloat(form.amount.replace(/\./g, '').replace(',', '.')) * 100 / parseInt(form.total_installments))
+                          )}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </>
+              )}
+
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -436,18 +464,11 @@ export default function TransactionsPage() {
             </div>
 
             <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => setShowModal(false)}
-                className="flex-1 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-              >
+              <button onClick={() => setShowModal(false)} className="flex-1 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                 Cancelar
               </button>
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
-              >
-                {saving ? 'Salvando...' : 'Salvar'}
+              <button onClick={handleSave} disabled={saving} className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors">
+                {saving ? 'Salvando...' : form.is_installment ? `Criar ${form.total_installments || '?'} parcelas` : 'Salvar'}
               </button>
             </div>
           </div>
