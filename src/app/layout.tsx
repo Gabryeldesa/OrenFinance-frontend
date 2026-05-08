@@ -14,9 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Financeiro",
-  description: "Sistema financeiro pessoal",
-};
+  title: "OrenFinance",
+}
 
 export default function RootLayout({
   children,
