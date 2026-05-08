@@ -68,7 +68,7 @@ export default function AccountsPage() {
     setForm({
       name: account.name,
       type: account.type,
-      initial_balance: (account.initial_balance / 100).toFixed(2).replace('.', ','),
+      initial_balance: (account.current_balance / 100).toFixed(2).replace('.', ','),
     })
     setError('')
     setShowModal(true)
