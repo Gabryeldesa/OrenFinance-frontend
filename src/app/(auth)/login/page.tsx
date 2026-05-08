@@ -133,9 +133,17 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                Senha
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Senha
+                </label>
+                <Link
+                  href="/forgot-password"
+                  className="text-xs text-blue-500 hover:underline"
+                >
+                  Esqueci minha senha
+                </Link>
+              </div>
               <input
                 type="password"
                 value={password}
