@@ -12,8 +12,6 @@ interface RecurringRule {
   day_of_month: number
   is_active: boolean
   credit_card_id: string | null
-  total_installments: number | null
-  current_installment: number | null
   categories?: { name: string; color: string }
   accounts?: { name: string }
   credit_cards?: { name: string }
@@ -31,8 +29,6 @@ const emptyForm = {
   account_id: '',
   credit_card_id: '',
   day_of_month: '5',
-  is_installment: false,
-  total_installments: '',
 }
 
 export default function RecurringPage() {
@@ -89,8 +85,6 @@ export default function RecurringPage() {
       account_id: '',
       credit_card_id: rule.credit_card_id || '',
       day_of_month: String(rule.day_of_month),
-      is_installment: !!rule.total_installments,
-      total_installments: rule.total_installments ? String(rule.total_installments) : '',
     })
     setError('')
     setShowModal(true)
@@ -100,7 +94,6 @@ export default function RecurringPage() {
     if (!form.description.trim()) { setError('Descrição é obrigatória.'); return }
     if (!form.amount) { setError('Valor é obrigatório.'); return }
     if (!form.day_of_month) { setError('Dia do mês é obrigatório.'); return }
-    if (form.is_installment && !form.total_installments) { setError('Informe o número de parcelas.'); return }
     setSaving(true)
     setError('')
     try {
@@ -112,7 +105,7 @@ export default function RecurringPage() {
         account_id: form.credit_card_id ? null : (form.account_id || null),
         credit_card_id: form.credit_card_id || null,
         day_of_month: parseInt(form.day_of_month),
-        total_installments: form.is_installment ? parseInt(form.total_installments) : null,
+        total_installments: null,
       }
       if (editing) {
         await fetchAPI(`/api/recurring/${editing.id}`, { method: 'PUT', body: JSON.stringify(body) })
@@ -167,7 +160,7 @@ export default function RecurringPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Recorrentes</h1>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Despesas fixas e compras parceladas</p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Despesas e receitas fixas mensais</p>
         </div>
         <div className="flex gap-2">
           <button
@@ -231,7 +224,7 @@ export default function RecurringPage() {
           {inactive.length > 0 && (
             <div>
               <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
-                Pausadas / Concluídas ({inactive.length})
+                Pausadas ({inactive.length})
               </h2>
               <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden opacity-60">
                 {inactive.map((rule, index) => (
@@ -286,15 +279,13 @@ export default function RecurringPage() {
                   type="text"
                   value={form.description}
                   onChange={e => setForm({ ...form, description: e.target.value })}
-                  placeholder="Ex: Netflix, Aluguel..."
+                  placeholder="Ex: Netflix, Aluguel, Salário..."
                   className={inputClass}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {form.is_installment ? 'Valor de cada parcela (R$)' : 'Valor (R$)'}
-                </label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Valor (R$)</label>
                 <input
                   type="text"
                   value={form.amount}
@@ -316,34 +307,6 @@ export default function RecurringPage() {
                 />
                 <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Use até o dia 28 para funcionar em todos os meses</p>
               </div>
-
-              <div className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
-                <input
-                  type="checkbox"
-                  id="is_installment"
-                  checked={form.is_installment}
-                  onChange={e => setForm({ ...form, is_installment: e.target.checked, total_installments: '' })}
-                  className="w-4 h-4 text-blue-600 rounded"
-                />
-                <label htmlFor="is_installment" className="text-sm text-gray-700 dark:text-gray-300">
-                  É uma compra parcelada
-                </label>
-              </div>
-
-              {form.is_installment && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Número de parcelas</label>
-                  <input
-                    type="number"
-                    min="2"
-                    max="60"
-                    value={form.total_installments}
-                    onChange={e => setForm({ ...form, total_installments: e.target.value })}
-                    placeholder="Ex: 12"
-                    className={inputClass}
-                  />
-                </div>
-              )}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Categoria</label>
@@ -419,20 +382,12 @@ function RuleRow({ rule, isLast, onEdit, onDelete, onToggle }: {
   onDelete: () => void
   onToggle: () => void
 }) {
-  const isInstallment = !!rule.total_installments
   return (
     <div className={`flex items-center justify-between p-4 ${!isLast ? 'border-b border-gray-50 dark:border-gray-700' : ''}`}>
       <div className="flex items-center gap-3">
         <div className={`w-2 h-8 rounded-full ${rule.type === 'income' ? 'bg-green-500' : 'bg-red-500'}`} />
         <div>
-          <div className="flex items-center gap-2">
-            <p className="text-sm font-medium text-gray-900 dark:text-white">{rule.description}</p>
-            {isInstallment && (
-              <span className="text-xs bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 px-1.5 py-0.5 rounded-full">
-                {rule.current_installment}/{rule.total_installments}x
-              </span>
-            )}
-          </div>
+          <p className="text-sm font-medium text-gray-900 dark:text-white">{rule.description}</p>
           <div className="flex items-center gap-2 mt-0.5">
             <p className="text-xs text-gray-400 dark:text-gray-500">Todo dia {rule.day_of_month}</p>
             {rule.categories && <span className="text-xs text-gray-400 dark:text-gray-500">· {rule.categories.name}</span>}
