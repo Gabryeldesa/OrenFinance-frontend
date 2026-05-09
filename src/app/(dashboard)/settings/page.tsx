@@ -55,8 +55,19 @@ export default function SettingsPage() {
   }
 
   const handleChangePassword = async () => {
-    if (password.length < 6) { setErrorPassword('A senha deve ter pelo menos 6 caracteres.'); return }
-    if (password !== passwordConfirm) { setErrorPassword('As senhas não coincidem.'); return }
+    const hasMinLength = password.length >= 8
+    const hasLetter = /[a-zA-Z]/.test(password)
+    const hasNumber = /[0-9]/.test(password)
+
+    if (!hasMinLength || !hasLetter || !hasNumber) {
+      setErrorPassword('A senha deve ter no mínimo 8 caracteres, com letras e números.')
+      return
+    }
+    if (password !== passwordConfirm) {
+      setErrorPassword('As senhas não coincidem.')
+      return
+    }
+
     setSavingPassword(true)
     setErrorPassword('')
     setSuccessPassword(false)
@@ -167,9 +178,35 @@ export default function SettingsPage() {
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                placeholder="Mínimo 6 caracteres"
+                placeholder="Mínimo 8 caracteres"
                 className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
+              {/* Indicador de força da senha */}
+              {password.length > 0 && (
+                <div className="mt-2 space-y-1">
+                  <div className="flex gap-1">
+                    <div className={`h-1 flex-1 rounded-full transition-colors ${password.length >= 8 ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-600'}`} />
+                    <div className={`h-1 flex-1 rounded-full transition-colors ${/[a-zA-Z]/.test(password) ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-600'}`} />
+                    <div className={`h-1 flex-1 rounded-full transition-colors ${/[0-9]/.test(password) ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-600'}`} />
+                  </div>
+                  <div className="flex gap-3 text-xs">
+                    <span className={password.length >= 8 ? 'text-green-600 dark:text-green-400' : 'text-gray-400'}>
+                      ✓ 8 caracteres
+                    </span>
+                    <span className={/[a-zA-Z]/.test(password) ? 'text-green-600 dark:text-green-400' : 'text-gray-400'}>
+                      ✓ Letras
+                    </span>
+                    <span className={/[0-9]/.test(password) ? 'text-green-600 dark:text-green-400' : 'text-gray-400'}>
+                      ✓ Números
+                    </span>
+                  </div>
+                </div>
+              )}
+              {password.length === 0 && (
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                  Use no mínimo 8 caracteres com letras e números.
+                </p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirmar nova senha</label>
@@ -180,6 +217,11 @@ export default function SettingsPage() {
                 placeholder="Repita a nova senha"
                 className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
+              {passwordConfirm.length > 0 && (
+                <p className={`text-xs mt-1 ${password === passwordConfirm ? 'text-green-600 dark:text-green-400' : 'text-red-500'}`}>
+                  {password === passwordConfirm ? '✓ As senhas coincidem' : '✗ As senhas não coincidem'}
+                </p>
+              )}
             </div>
           </div>
 
@@ -190,6 +232,34 @@ export default function SettingsPage() {
           >
             {savingPassword ? 'Salvando...' : 'Trocar senha'}
           </button>
+        </div>
+
+        {/* Sobre */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-6">
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">Sobre</h2>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-500 dark:text-gray-400">Aplicativo</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">Oren Finance</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-500 dark:text-gray-400">Versão</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">3.0.0</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-500 dark:text-gray-400">Desenvolvido por</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">Gabryel Albuquerque</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-500 dark:text-gray-400">Banco de dados</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">Supabase (PostgreSQL)</span>
+            </div>
+            <div className="pt-3 border-t border-gray-100 dark:border-gray-700">
+              <p className="text-xs text-gray-400 dark:text-gray-500 text-center">
+                © 2026 Oren Finance. Todos os direitos reservados.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Zona de perigo */}
